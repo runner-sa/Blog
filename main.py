@@ -8,7 +8,6 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
-from flask_marshmallow import Marshmallow
 from functools import wraps
 from flask import abort
 
@@ -21,7 +20,6 @@ gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=Fa
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-ma = Marshmallow(app)
 
 ##CONFIGURE TABLES
 
