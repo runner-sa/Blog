@@ -11,6 +11,8 @@ from flask_gravatar import Gravatar
 from functools import wraps
 from flask import abort
 import os
+from flask import request
+import smtplib
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -18,7 +20,7 @@ ckeditor = CKEditor(app)
 Bootstrap(app)
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(("DATABASE_URL"))
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -174,10 +176,33 @@ def show_post(post_id):
 def about():
     return render_template("about.html", current_user=current_user)
 
-@app.route("/contact")
+@app.route("/contact", methods=['POST', 'GET'])
 def contact():
-    return render_template("contact.html", current_user=current_user)
+    my_email = "python.edin@gmail.com"
+    password = "iwswkbuzhqfchlfe"
 
+    if request.method == "POST":
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        message = request.form['message']
+        email_message = f"Subject:New Form\n\nName : {name}\neMail : {email}\nTelephone Number : {phone}\nMessage : \n{message}\n"
+        with smtplib.SMTP("smtp.gmail.com") as connection:
+            connection.starttls()
+            connection.login(user=my_email, password=password)
+            connection.sendmail(from_addr=my_email, to_addrs="edin.salihagic@gmail.com",
+                                msg=email_message)
+        # with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
+        #     connection.starttls()
+        #     connection.login(user=my_email, password=password)
+        #     subject = "VIDLJIV ISS"
+        #     poruka = "ISS je vidljiv iznad Sarajeva"
+        #     connection.sendmail(from_addr=my_email,
+        #                         to_addrs="edin.salihagic@gmail.com",
+        #                         msg=f"Subject: {subject}\n\n {poruka}")
+
+        return render_template("contact.html", msg_sent=True)
+    return render_template("contact.html", msg_sent=False)
 
 @app.route("/new-post", methods=["GET", "POST"])
 #Mark with decorator
