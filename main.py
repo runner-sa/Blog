@@ -187,7 +187,7 @@ def contact():
         phone = request.form['phone']
         message = request.form['message']
         email_message = f"Subject:New Form\n\nName : {name}\neMail : {email}\nTelephone Number : {phone}\nMessage : \n{message}\n"
-        with smtplib.SMTP("smtp.gmail.com") as connection:
+        with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
             connection.starttls()
             connection.login(user=my_email, password=password)
             connection.sendmail(from_addr=my_email, to_addrs="edin.salihagic@gmail.com",
